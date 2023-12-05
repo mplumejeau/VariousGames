@@ -5,6 +5,8 @@
 #ifndef VARIOUS_GAMES_GAMEMANAGER_H
 #define VARIOUS_GAMES_GAMEMANAGER_H
 
+#include <memory>
+
 #include "Power4.h"
 #include "TicTacToe.h"
 
@@ -13,13 +15,15 @@ class GameManager {
 private:
 
     int gameId;
-    Power4* p4;          // gameId = 0
-    TicTacToe* ttt;      // gameId = 1
+    unique_ptr<Game> game;
 
 public:
 
-    void startGame(){
+    void startPlaying(){
 
+        begin_selection:
+
+        cout << "=================================================================" << endl;
         cout << "SELECTION OF THE GAME AMONG :" << endl;
         cout << "POWER 4 : 0" << endl;
         cout << "TIC TAC TOE : 1" << endl;
@@ -28,13 +32,22 @@ public:
         cin >> gameId;
 
         switch (gameId) {
-            case 0 : p4 = new Power4();
-                     p4->start();
-                     delete p4;
-            case 1 : ttt = new TicTacToe();
-                     ttt->start();
-                     delete ttt;
+            case 0 :
+                game = make_unique<Power4>();
+                game->start();
+                break;
+
+            case 1 :
+                game = make_unique<TicTacToe>();
+                game->start();
+                break;
+
+            default :
+                cout << "Invalid game ID" << endl;
+                cout << "Try again" << endl;
+                goto begin_selection;
         }
+
 
     }
 

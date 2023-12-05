@@ -37,7 +37,15 @@ public :
             }
         }
 
-        cout << "WINNER IS : " << getWinner()->getName() << endl;
+        Player* winner = getWinner();
+
+        if(winner == nullptr){
+            cout << "THERE IS NO WINNER" << endl;
+        }
+        else {
+            cout << "WINNER IS : " << winner->getName() << endl;
+        }
+
         cout << "GAME ENDS" << endl;
 
         end();

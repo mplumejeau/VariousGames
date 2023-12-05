@@ -10,6 +10,6 @@ int main(){
 
     GameManager gm;
 
-    gm.startGame();
+    gm.startPlaying();
 
 };
