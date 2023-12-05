@@ -2,16 +2,14 @@
 // Created by eii on 08/11/23.
 //
 
-#include "Power4.h"
-#include "TicTacToe.h"
+#include "GameManager.h"
 
 using namespace std;
 
 int main(){
 
-    Power4 p;
-    //TicTacToe p;
+    GameManager gm;
 
-    p.start();
+    gm.startGame();
 
 };
