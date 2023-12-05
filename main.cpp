@@ -2,15 +2,16 @@
 // Created by eii on 08/11/23.
 //
 
-#include "PlayPower4.h"
-#include "PlayTicTacToe.h"
+#include "Power4.h"
+#include "TicTacToe.h"
+
+using namespace std;
 
 int main(){
 
-    PlayPower4 p;
-    //PlayTicTacToe p;
+    Power4 p;
+    //TicTacToe p;
 
-    p.run();
-
+    p.start();
 
 };

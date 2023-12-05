@@ -7,63 +7,106 @@
 
 #include <iostream>
 
-#include "GameT.h"
+#include "GameGrid.h"
+
+#define POWER4_NB_PLAYER 2
+#define POWER4_WIDTH 7
+#define POWER4_HEIGHT 6
 
 using namespace std;
 using namespace nsGame;
 
-class Power4 : public GameT<7,6>{
+class Power4 : public GameGrid<POWER4_NB_PLAYER,POWER4_WIDTH,POWER4_HEIGHT>{
+
+    static const char power4_form = 'O';
 
 public:
 
+    void init() override {
 
-    char getDisplayPlayer1() const override{
-        return 'y';
+        string name0, name1;
+
+        GameGrid::init();
+
+        cout << "Give the name of the first player" << endl;
+        cin >> name0;
+
+        playerList[0] = new Player(name0, YELLOW);
+
+        cout << "Give the name of the second player" << endl;
+        cin >> name1;
+
+        playerList[1] = new Player(name1, RED);
+
     }
 
-    char getDisplayPlayer2() const override{
-        return 'r';
-    }
-
-    bool play(Color player) override{
+    bool play(Player* player) override {
 
         int nbCol;
 
         cout << "----------------------------------------------------------------" << endl;
-        cout << "Player : " << player << endl;
+        cout << "Player : " << player->getName() << endl;
         cout << "Give a column number between 0 and 6" << endl;
         cin >> nbCol;
 
-        for(int j=0; j<7; j++){
-            if(grid[nbCol][j] == EMPTY){
-                grid[nbCol][j] = player;
+        for(int j=0; j<POWER4_HEIGHT; j++){
+            if(grid[nbCol][j] == nullptr){
+                grid[nbCol][j] = new Token(nbCol, j, player, power4_form);
                 break;
             }
         }
 
-        GameT<7, 6>::display();
+        GameGrid::display();
 
         return true;
 
     }
 
-    bool is4InRowBottom(Color player, int i, int j) const{
-        return grid[i][j]==player && grid[i][j+1]==player && grid[i][j+2]==player && grid[i][j+3]==player;
+    bool is4InRowBottom(Player* player, int i, int j) const{
+        Token* token_current = grid[i][j];
+        Token* token_below_1 = grid[i][j+1];
+        Token* token_below_2 = grid[i][j+2];
+        Token* token_below_3 = grid[i][j+3];
+        if(token_current == nullptr || token_below_1 == nullptr || token_below_2 == nullptr || token_below_3 == nullptr){
+            return false;
+        }
+        return token_current->getPlayer()==player && token_below_1->getPlayer()==player && token_below_2->getPlayer()==player && token_below_3->getPlayer()==player;
     }
 
-    bool is4InRowRight(Color player, int i, int j) const{
-        return grid[i][j]==player && grid[i+1][j]==player && grid[i+2][j]==player && grid[i+3][j]==player;
+    bool is4InRowRight(Player* player, int i, int j) const{
+        Token* token_current = grid[i][j];
+        Token* token_right_1 = grid[i+1][j];
+        Token* token_right_2 = grid[i+2][j];
+        Token* token_right_3 = grid[i+3][j];
+        if(token_current == nullptr || token_right_1 == nullptr || token_right_2 == nullptr || token_right_3 == nullptr){
+            return false;
+        }
+        return token_current->getPlayer()==player && token_right_1->getPlayer()==player && token_right_2->getPlayer()==player && token_right_3->getPlayer()==player;
     }
 
-    bool is4InRowBottomRight(Color player, int i, int j) const{
-        return grid[i][j]==player && grid[i+1][j+1]==player && grid[i+2][j+2]==player && grid[i+3][j+3]==player;
+    bool is4InRowBottomRight(Player* player, int i, int j) const{
+        Token* token_current = grid[i][j];
+        Token* token_below_right_1 = grid[i+1][j+1];
+        Token* token_below_right_2 = grid[i+2][j+2];
+        Token* token_below_right_3 = grid[i+3][j+3];
+        if(token_current == nullptr || token_below_right_1 == nullptr || token_below_right_2 == nullptr || token_below_right_3 == nullptr){
+            return false;
+        }
+        return token_current->getPlayer()==player && token_below_right_1->getPlayer()==player && token_below_right_2->getPlayer()==player && token_below_right_3->getPlayer()==player;
     }
 
-    bool is4InRowBottomLeft(Color player, int i, int j) const{
-        return grid[i][j]==player && grid[i-1][j+1]==player && grid[i-2][j+2]==player && grid[i-3][j+3]==player;
+    bool is4InRowBottomLeft(Player* player, int i, int j) const{
+        Token* token_current = grid[i][j];
+        Token* token_below_left_1 = grid[i-1][j+1];
+        Token* token_below_left_2 = grid[i-2][j+2];
+        Token* token_below_left_3 = grid[i-3][j+3];
+        if(token_current == nullptr || token_below_left_1 == nullptr || token_below_left_2 == nullptr || token_below_left_3 == nullptr){
+            return false;
+        }
+        return token_current->getPlayer()==player && token_below_left_1->getPlayer()==player && token_below_left_2->getPlayer()==player && token_below_left_3->getPlayer()==player;
     }
 
-    bool is4InRow(Color player) const{
+    bool is4InRow(Player* player) const{
 
         // test 4 in row bottom on the whole grid
         for(int i=0; i<7; i++){
@@ -105,11 +148,36 @@ public:
 
     }
 
-    Color getWinner() const override{
+    Player* getWinner() const override{
 
-        if(is4InRow(PLAYER1)) return PLAYER1;
-        else if (is4InRow(PLAYER2)) return PLAYER2;
-        else return EMPTY;
+        if(is4InRow(playerList[0])) {
+            return playerList[0];
+        }
+        else if (is4InRow(playerList[1])) {
+            return playerList[1];
+        }
+        else {
+            return nullptr;
+        }
+
+    }
+
+    bool isFinished() const override {
+
+        bool res = GameGrid::isFinished();
+
+        if(!res){
+            for(int i=0; i<POWER4_WIDTH; i++){
+                for(int j=0; j<POWER4_HEIGHT; j++){
+                    if(grid[i][j] == nullptr){
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        return res;
 
     }
 
